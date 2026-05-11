@@ -1,10 +1,7 @@
-# rawg-games-dataset-search
-Searching of values using pipes (FIFO)
-
 # 🎮 RAWG Games Search Engine — Práctica 1
 **Sistemas Operativos - Universidad Nacional de Colombia**
 
-Este proyecto implementa un sistema de búsqueda de alto rendimiento para el dataset de RAWG Games (aprox. 2GB), comunicando dos procesos independientes mediante tuberías nombradas (FIFOs).
+Este sistema permite realizar búsquedas eficientes sobre el dataset de RAWG Games (aprox. 2GB) utilizando una arquitectura de **proceso cliente-servidor** comunicados mediante tuberías nombradas (**FIFOs**).
 
 ## 👥 Integrantes
 * Carlos Samuel Ariza Cano
@@ -13,30 +10,39 @@ Este proyecto implementa un sistema de búsqueda de alto rendimiento para el dat
 
 ---
 
-## 🛠️ Arquitectura y Gestión de Memoria
-Para cumplir con la restricción de **10MB de RAM** sobre un dataset de **1.96GB**, se implementó una estrategia de **Indexación por Offsets**:
+## 🏗️ Arquitectura del Sistema
 
-1.  **Pre-procesamiento:** El sistema convierte el CSV original en un archivo binario (`juegos.bin`) con registros de tamaño fijo.
-2.  **Tabla Hash (RAM):** Solo se almacena el `ID` del juego y su posición (`offset`) en el archivo binario. Esto permite que el uso de memoria sea constante independientemente del tamaño del dataset.
-3.  **Búsqueda en Disco:** Las búsquedas por texto (Nombre, Desarrollador, etc.) se realizan mediante un barrido secuencial en disco con un buffer pequeño, garantizando respuestas en **< 2 segundos**.
+El proyecto se divide en dos componentes principales que se ejecutan de forma paralela:
+
+1.  **Motor de Búsqueda (`p1-dataProgram.c`):**
+    * **Indexación:** Al iniciar, convierte el CSV original en un archivo binario de registros fijos (`juegos.bin`).
+    * **Tabla Hash:** Almacena en RAM los pares `ID -> offset_en_disco`. Esto permite búsquedas de ID con complejidad $O(1)$.
+    * **Servidor de Consultas:** Escucha peticiones en `FIFO_ENVIO`, procesa la búsqueda y devuelve los resultados por `FIFO_RESPUESTA`.
+
+2.  **Interfaz de Usuario (`interface.c`):**
+    * Presenta un menú interactivo para capturar los criterios (Nombre, Año, Rating, etc.).
+    * Envía estructuras `CriteriosBusqueda` y recibe `ResultadosBusqueda` de forma síncrona.
 
 ---
 
-## 🔍 Criterios de Búsqueda
-Se han implementado los siguientes modos de consulta:
-
-1.  **Nombre del Juego:** Búsqueda parcial (ej: "Half-Life" devuelve todas las versiones).
-2.  **ID Único:** Acceso instantáneo mediante la Tabla Hash.
-3.  **Rating Mínimo:** Filtra juegos con una calificación mayor o igual a la ingresada.
-4.  **Plataforma:** Filtra por sistema (ej: PC, PlayStation, Xbox).
+## 🔍 Capacidades de Búsqueda
+El sistema soporta 7 modos de consulta distintos:
+1.  **Nombre del Juego:** Búsqueda parcial (case-insensitive).
+2.  **Año de Lanzamiento:** Filtrado por los primeros 4 dígitos de la fecha.
+3.  **Rating Mínimo:** Filtra juegos con calificación mayor o igual a la ingresada.
+4.  **Plataforma:** Búsqueda por sistema (ej: PC, PlayStation).
 5.  **Desarrollador:** Búsqueda por estudio de desarrollo.
-6.  **Género:** Filtra por categorías (ej: Action, Puzzle).
+6.  **Género:** Filtra por categorías (ej: Action, RPG).
+7.  **ID Único:** Acceso instantáneo mediante la **Tabla Hash**.
 
 ---
 
 ## 🚀 Instrucciones de Uso
 
-### 1. Compilación
+### 1. Preparación
+Asegúrate de tener el archivo `rawg-games-dataset.csv` en la raíz del proyecto.
+
+### 2. Compilación
 Utilice el comando `make` para generar los ejecutables:
 ```bash
 make

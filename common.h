@@ -3,9 +3,9 @@
 
 // ===== CONSTANTES ===== //
 #define MAX_RESULTADOS  50
-#define DATASET_SIZE    80000
+#define DATASET_SIZE    10000
 #define STR_LEN         80
-#define STR_EXTRA       150
+#define STR_EXT         150
 
 // ===== TIPOS DE BÚSQUEDA ===== //
 typedef enum {

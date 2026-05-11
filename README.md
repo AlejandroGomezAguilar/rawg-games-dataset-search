@@ -41,6 +41,7 @@ El sistema soporta 7 modos de consulta distintos:
 
 ### 1. Preparación
 Asegúrate de tener el archivo `rawg-games-dataset.csv` en la raíz del proyecto.
+https://www.kaggle.com/datasets/atalaydenknalbant/rawg-games-dataset
 
 ### 2. Compilación
 Utilice el comando `make` para generar los ejecutables:

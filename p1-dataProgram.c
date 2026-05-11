@@ -40,16 +40,42 @@ typedef struct {
     Node** table;
 } HashTable;
 
-// Función Hash simple para el ID
-int hash(int id) { return id % TABLE_SIZE; }
+// Función para crear la tabla
+HashTable* create_table(int size) {
+    HashTable* ht = malloc(sizeof(HashTable));
+    if (!ht || !ht->table) {
+        printf("Error: No hay RAM suficiente para la tabla hash.\n");
+        return 1;
+    }
+    ht->table = malloc(sizeof(Node*) * size);
+    for (int i = 0; i < size; i++) ht->table[i] = NULL;
+    return ht;
+}
 
-void insert(HashTable* ht, int id, long offset) {
-    int h = hash(id);
+// Función hash simple
+int hash_fn(int id) {
+    return id % TABLE_SIZE;
+}
+
+// Función para insertar
+void insert_id(HashTable* ht, int id, long offset) {
+    int h = hash_fn(id);
     Node* new_node = malloc(sizeof(Node));
     new_node->id = id;
     new_node->offset = offset;
     new_node->next = ht->table[h];
     ht->table[h] = new_node;
+}
+
+// Función para buscar (Esta es la que te falta en el error)
+Node* search_id(HashTable* ht, int id) {
+    int h = hash_fn(id);
+    Node* actual = ht->table[h];
+    while (actual != NULL) {
+        if (actual->id == id) return actual;
+        actual = actual->next;
+    }
+    return NULL;
 }
 
 // ============================================== //
@@ -81,6 +107,10 @@ char* obtener_campo(char **linea) {
 
 void convertir_csv_a_binario(const char* csv_path, HashTable* ht) {
     FILE *csv = fopen(csv_path, "r");
+    if (!csv) {
+        perror("❌ Error al abrir el CSV");
+        return;
+    }
     FILE *bin = fopen("juegos.bin", "wb");
     char buffer[10000]; // Buffer grande para líneas de 2GB
 
@@ -113,7 +143,7 @@ void convertir_csv_a_binario(const char* csv_path, HashTable* ht) {
         
         long offset = ftell(bin);
         fwrite(&reg, sizeof(JuegoRegistro), 1, bin);
-        insert(ht, reg.id, offset); // Indexamos el ID para búsqueda rápida
+        insert_id(ht, reg.id, offset); // Indexamos el ID para búsqueda rápida
     }
     fclose(csv);
     fclose(bin);

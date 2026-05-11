@@ -9,7 +9,7 @@ Este proyecto implementa un sistema de búsqueda de alto rendimiento para el dat
 ## 👥 Integrantes
 * Carlos Samuel Ariza Cano
 * Jader Camilo Rodríguez
-* Alejandro Gomez Aguilar
+* Genaro Alejandro Gomez Aguilar
 
 ---
 

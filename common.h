@@ -2,7 +2,7 @@
 #define COMMON_H
 
 // ===== CONSTANTES ===== //
-#define MAX_RESULTADOS  50
+#define MAX_RESULTADOS  100
 #define DATASET_SIZE    10000
 #define STR_LEN         80
 #define STR_EXT         150
@@ -44,6 +44,7 @@ typedef struct { // Resultados enviados del proceso de búsqueda a la interfaz
 typedef struct { 
     Juego juegos[MAX_RESULTADOS];
     int num_resultados;
+    int total_encontrados;
 } ResultadosBusqueda;
 
 #endif

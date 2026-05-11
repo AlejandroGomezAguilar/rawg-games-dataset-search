@@ -42,13 +42,21 @@ typedef struct {
 
 // Función para crear la tabla
 HashTable* create_table(int size) {
-    HashTable* ht = malloc(sizeof(HashTable));
-    if (!ht || !ht->table) {
-        printf("Error: No hay RAM suficiente para la tabla hash.\n");
-        return 1;
+    // 1. Reservar memoria para la estructura de la tabla
+    HashTable* ht = (HashTable*)malloc(sizeof(HashTable));
+    if (!ht) return NULL;
+
+    // 2. Reservar memoria para el arreglo de punteros (buckets)
+    ht->table = (Node**)malloc(sizeof(Node*) * size);
+    if (!ht->table) {
+        free(ht); // Limpiar si falló la segunda reserva
+        return NULL;
     }
-    ht->table = malloc(sizeof(Node*) * size);
-    for (int i = 0; i < size; i++) ht->table[i] = NULL;
+
+    // 3. Inicializar todos los punteros a NULL
+    for (int i = 0; i < size; i++) {
+        ht->table[i] = NULL;
+    }
     return ht;
 }
 
@@ -147,6 +155,19 @@ void convertir_csv_a_binario(const char* csv_path, HashTable* ht) {
     }
     fclose(csv);
     fclose(bin);
+}
+
+void liberar_tabla(HashTable* ht) {
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        Node* actual = ht->table[i];
+        while (actual) {
+            Node* temp = actual;
+            actual = actual->next;
+            free(temp);
+        }
+    }
+    free(ht->table);
+    free(ht);
 }
 
 // ============================================== //
@@ -252,5 +273,7 @@ int main() {
         }
     }
 
+    fclose(bin);
+    liberar_tabla(ht);
     return 0;
 }

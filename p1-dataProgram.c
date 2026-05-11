@@ -209,7 +209,7 @@ int main() {
     
     printf("📦 Cargando e indexando dataset de 2GB...\n");
     // Esto genera el juegos.bin y llena la tabla hash en RAM
-    convertir_csv_a_binario("RAWG_Games_Dataset.csv", ht);
+    convertir_csv_a_binario("rawg-games-dataset.csv", ht);
     
     FILE *bin = fopen("juegos.bin", "rb");
     if (!bin) { perror("Error al abrir binario"); return 1; }
